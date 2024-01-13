@@ -55,6 +55,9 @@
           <div class="todo-content">
             <input type="text" v-model="todo.content" />
           </div>
+          <div class="actions">
+            <button class="delete" @click="removeTodo(todo)">Delete</button>
+          </div>
         </div>
       </div>
     </section>
@@ -81,18 +84,30 @@ const todos_asc = computed(() =>
   })
 );
 
+// This function adds a todo to the todos array.
 const addTodo = () => {
+  // Check if the input values are empty and return if they are.
   if (input_content.value.trim() === "" || input_category.value === null) {
     // Show alert
     return;
   }
 
+  // Add a new todo to the todos array
   todos.value.push({
     content: input_content.value,
     category: input_category.value,
     done: false,
     createdAt: new Date().getTime(),
   });
+
+  // Reset input values after adding a todo
+  input_content.value = "";
+  input_category.value = null;
+};
+
+// This function removes a todo from the todos array.
+const removeTodo = (todo_params) => {
+  todos.value = todos.value.filter((todo) => todo !== todo_params);
 };
 
 // This watch performs an action when the todos value changes.
