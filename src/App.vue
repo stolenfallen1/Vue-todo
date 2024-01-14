@@ -8,64 +8,19 @@
 
     <section class="create-todo">
       <h3>CREATE A TODO</h3>
-
-      <form @submit.prevent="addTodo">
-        <h4>What's on your todo list?</h4>
-        <input
-          type="text"
-          placeholder="e.g. make a video"
-          v-model="input_content"
-        />
-        <h4>Pick a category</h4>
-        <div class="options">
-          <label>
-            <input
-              type="radio"
-              name="category"
-              id="category1"
-              value="business"
-              v-model="input_category"
-            />
-            <span class="bubble business"></span>
-            <div>Business</div>
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="category"
-              id="category1"
-              value="personal"
-              v-model="input_category"
-            />
-            <span class="bubble personal"></span>
-            <div>Personal</div>
-          </label>
-        </div>
-        <input type="submit" value="Add Todo" />
-      </form>
+      <AddTodo @addTodo="addTodo" />
     </section>
     <section class="todo-list">
       <h3>TODO LIST</h3>
-      <div class="list">
-        <div v-for="todo in todos" :class="`todo-item ${todo.done && 'done'}`">
-          <label>
-            <input type="checkbox" v-model="todo.done" />
-            <span :class="`bubble ${todo.category}`"></span>
-          </label>
-          <div class="todo-content">
-            <input type="text" v-model="todo.content" />
-          </div>
-          <div class="actions">
-            <button class="delete" @click="removeTodo(todo)">Delete</button>
-          </div>
-        </div>
-      </div>
+      <DisplayTodo :todos="todos" @removeTodo="removeTodo" />
     </section>
   </main>
 </template>
 
 <script setup>
 import { ref, onMounted, computed, watch } from "vue";
+import AddTodo from "./components/AddTodo.vue";
+import DisplayTodo from "./components/DisplayTodo.vue";
 
 // ref: Creates a reactive reference to a value.
 // onMounted: Runs code after a component is added to the webpage.
@@ -75,9 +30,6 @@ import { ref, onMounted, computed, watch } from "vue";
 const todos = ref([]);
 const name = ref("");
 
-const input_content = ref("");
-const input_category = ref(null);
-
 const todos_asc = computed(() =>
   todos.value.sort((a, b) => {
     return b.createdAt - a.createdAt;
@@ -85,24 +37,14 @@ const todos_asc = computed(() =>
 );
 
 // This function adds a todo to the todos array.
-const addTodo = () => {
-  // Check if the input values are empty and return if they are.
-  if (input_content.value.trim() === "" || input_category.value === null) {
-    // Show alert
-    return;
-  }
-
+const addTodo = (todo) => {
   // Add a new todo to the todos array
   todos.value.push({
-    content: input_content.value,
-    category: input_category.value,
+    content: todo.content,
+    category: todo.category,
     done: false,
     createdAt: new Date().getTime(),
   });
-
-  // Reset input values after adding a todo
-  input_content.value = "";
-  input_category.value = null;
 };
 
 // This function removes a todo from the todos array.
